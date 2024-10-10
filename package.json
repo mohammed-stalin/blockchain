@@ -1,0 +1,13 @@
+{
+    "type": "module",
+    "name": "Ex1-merkel-tree-implementation",
+    "version": "1.0.0",
+    "description": "Simple implementation of the Merkle Tree structure",
+    "main": "EX1.js",
+    "scripts": {
+      "start": "node EX1.js",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "mohammed stalin ",
+    "license": "ISC"
+  }
