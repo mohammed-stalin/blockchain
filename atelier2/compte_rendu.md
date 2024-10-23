@@ -39,8 +39,8 @@ def modinv(a, m):
 
 # Generate large primes (for simplicity, smaller primes in this example)
 def generate_keypair():
-    p = 11
-    q = 57
+    p = 61 #for simplicity only in the code i used a function to generate large prime numbers
+    q = 53
     n = p * q
     phi = (p - 1) * (q - 1)
     

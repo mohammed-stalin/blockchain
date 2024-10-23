@@ -15,7 +15,7 @@ def modinv(a, m):
 
 
 
-def generate_large_prime(bits=1024):
+def generate_large_prime(bits=512):
     # Generate a random large number and find the next prime number
     large_num = random.getrandbits(bits)
     prime = nextprime(large_num)
