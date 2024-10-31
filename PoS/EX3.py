@@ -33,18 +33,18 @@ class ProofOfStake:
             if cumulative >= rand_num:
                 selected_staker = address
                 break
-        return selected_staker, f"Block created by {selected_staker} with data: {data}"
+        return selected_staker, f"block created by {selected_staker} with data: {data}"
 
 # Example usage and timing
 def example_usage():
-    data = "Sample Block Data"
+    data = "wahed data simple chwiya "
     
     # Proof of Work
     pow = ProofOfWork(difficulty=4)
     start_time = time.time()
     nonce, pow_hash = pow.mine(data)
     pow_time = time.time() - start_time
-    print(f"Proof of Work: Nonce: {nonce}, Hash: {pow_hash}, Time taken: {pow_time:.4f} seconds")
+    print(f"Pow: Nonce: {nonce}, Hash: {pow_hash}, time: {pow_time:.4f} s")
 
     # Proof of Stake
     pos = ProofOfStake()
@@ -55,7 +55,7 @@ def example_usage():
     start_time = time.time()
     staker, pos_result = pos.validate_block(data)
     pos_time = time.time() - start_time
-    print(f"Proof of Stake: {pos_result}, Time taken: {pos_time:.4f} seconds")
+    print(f"Proof of Stake: {pos_result}, Time taken: {pos_time:.4f} s")
 
 if __name__ == "__main__":
     example_usage()
