@@ -78,7 +78,7 @@ Once the contract is deployed, you can interact with it using the following func
 - To get the number of posts made by a user, use the `getTotalPosts` function.
 - Enter the author’s address, and it will return the total count of posts by that user.
 
-## demonstraion
+## 6. demonstraion
 
 ### 1. Posting a Post
 ![alt text](publishing.png)
