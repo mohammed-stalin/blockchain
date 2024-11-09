@@ -12,7 +12,7 @@ This is a Solidity-based smart contract called **MiniSocial**. It is a simple so
 - [Installation](#installation)
 - [Usage](#usage)
 - [Demonstraion](#demonstraion)
-- [License](#license)
+
 
 ## Overview
 
@@ -54,7 +54,6 @@ Once the contract is deployed, you can interact with it using the following func
 - Enter a message (up to 300 characters) and click **transact** to publish it.
 - A new post will be created and stored under the sender’s address.
 
-*Screenshot of posting a post goes here.*
 
 ### 2. Get a Post
 
@@ -73,7 +72,6 @@ Once the contract is deployed, you can interact with it using the following func
 - Enter the author's address and the post index (e.g., 0 for the first post) to like it.
 - The `likes` count for the post will increment by 1.
 
-*Screenshot of liking a post goes here.*
 
 ### 5. Get Total Posts by a User
 
@@ -83,14 +81,9 @@ Once the contract is deployed, you can interact with it using the following func
 ## demonstraion
 
 ### 1. Posting a Post
-_Add screenshot here._
-
+![alt text](publishing.png)
 ### 2. Liking a Post
-_Add screenshot here._
-
-## License
-
-This project is licensed under the GPL-3.0 License.
+![alt text](liking.png)
 
 ---
 
