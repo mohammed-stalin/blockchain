@@ -96,39 +96,16 @@ Open `index.html` in a browser. Ensure MetaMask is connected and the correct net
 
 ---
 
-## Front-End Features
-
-### Buttons and Functions
-
-1. **Publish Post**: 
-   - Textarea to write posts.
-   - Button to submit and store the post on the blockchain.
-
-2. **View Posts**:
-   - Input field to specify an author's address.
-   - Fetches and displays all posts by the given address.
-
-3. **Like Post**:
-   - Button to like a post.
-
-4. **Dislike Post**:
-   - Button to dislike a post.
-
-5. **Delete Post**:
-   - Button for the post author to delete the post.
-
----
-
 ## Screenshots
 
 ### Home Page
-![Home Page](minisocial)
+![Home Page](minisocial.JPG)
 
 ### Viewing Posts
 ![View Posts](minisocial3.JPG)
 
 ### Publishing Posts
-![Publish Posts](minisocial4.JPG)
+![Publish Posts](minisocial2.JPG)
 
 ---
 
