@@ -1,7 +1,6 @@
 import time
 import hashlib
 import random
-
 class ProofOfWork:
     def __init__(self, difficulty):
         self.difficulty = difficulty

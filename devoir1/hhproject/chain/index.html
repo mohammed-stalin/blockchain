@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Social Network</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+
+        header {
+            background-color: #007acc;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #007acc;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #005f99;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #f9f9f9;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .post-author {
+            font-weight: bold;
+            color: #007acc;
+        }
+
+        .post-details {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .post-content {
+            margin: 10px 0;
+        }
+
+        .like-button {
+            margin-top: 10px;
+            background-color: #28a745;
+        }
+
+        .like-button:hover {
+            background-color: #218838;
+        }
+
+        #publishStatus {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #007acc;
+        }
+        .like-button, .dislike-button, .delete-button {
+        margin: 5px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .like-button {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .dislike-button {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .delete-button {
+        background-color: #ffc107;
+        color: black;
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mini Social Network</h1>
+    </header>
+    <main>
+        <!-- Publish a Post -->
+        <section>
+            <h2>Publish a Post</h2>
+            <textarea id="postContent" rows="4" placeholder="Write your post here..."></textarea>
+            <button onclick="publishPost()">Publish</button>
+            <p id="publishStatus"></p>
+        </section>
+
+        <!-- View Posts -->
+        <section>
+            <h2>View All Posts</h2>
+            <button onclick="getPosts()">Load All Posts</button>
+            <ul id="postsList"></ul>
+        </section>
+    </main>
+
+    <script>
+        const CONTRACT_ABI = [
+	{
+		"inputs": [],
+		"name": "TWEET_MAX_LENGTH",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_index",
+				"type": "uint256"
+			}
+		],
+		"name": "deletePost",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_author",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_index",
+				"type": "uint256"
+			}
+		],
+		"name": "dislikePost",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_author",
+				"type": "address"
+			}
+		],
+		"name": "getAllTweets",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "content",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "likes",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct MiniSocial.Post[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_author",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_index",
+				"type": "uint256"
+			}
+		],
+		"name": "getPost",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_author",
+				"type": "address"
+			}
+		],
+		"name": "getTotalPosts",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_author",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_index",
+				"type": "uint256"
+			}
+		],
+		"name": "likePost",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_message",
+				"type": "string"
+			}
+		],
+		"name": "publishPost",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
+        const CONTRACT_ADDRESS = "0x2bC4bda66711B1CEC35AC6492eC2d8d90A17D6e5";
+
+        let web3;
+        let contract;
+
+        // Initialize web3 and contract
+        async function init() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+            } else {
+                alert("Please install MetaMask to use this feature.");
+            }
+        }
+
+        // Publish a post
+        async function publishPost() {
+            const accounts = await web3.eth.getAccounts();
+            const message = document.getElementById("postContent").value;
+            try {
+                await contract.methods.publishPost(message).send({ from: accounts[0] });
+                document.getElementById("publishStatus").innerText = "Post published successfully!";
+                document.getElementById("postContent").value = ""; // Clear textarea
+            } catch (error) {
+                document.getElementById("publishStatus").innerText = "Error publishing post: " + error.message;
+            }
+        }
+
+        // Get all posts
+        async function getPosts() {
+    const postsList = document.getElementById("postsList");
+    postsList.innerHTML = '';
+
+    try {
+        const accounts = await web3.eth.getAccounts();
+        const userAddress = accounts[0];
+        const posts = await contract.methods.getAllTweets(userAddress).call();
+
+        posts.forEach((post, index) => {
+            const timestamp = Number(post.timestamp); // Convert BigInt to Number
+            const likes = Number(post.likes); // Convert BigInt to Number
+
+            const postElement = document.createElement("li");
+            postElement.innerHTML = `
+                <span class="post-author">${post.author}</span>
+                <div class="post-content">${post.content}</div>
+                <div class="post-details">
+                    Likes: ${likes} | Timestamp: ${new Date(timestamp * 1000).toLocaleString()}
+                </div>
+                <button class="like-button" onclick="likePost('${userAddress}', ${index})">Like</button>
+                <button class="dislike-button" onclick="dislikePost('${userAddress}', ${index})">Dislike</button>
+                <button class="delete-button" onclick="deletePost(${index})">Delete</button>
+            `;
+
+            postsList.appendChild(postElement);
+        });
+    } catch (error) {
+        postsList.innerHTML = "Error retrieving posts: " + error.message;
+    }
+}
+async function deletePost(index) {
+    const accounts = await web3.eth.getAccounts();
+    try {
+        await contract.methods.deletePost(index).send({ from: accounts[0] });
+        alert("Post deleted successfully!");
+        getPosts(); // Refresh posts
+    } catch (error) {
+        alert("Error deleting post: " + error.message);
+    }
+}
+
+
+async function dislikePost(author, index) {
+    const accounts = await web3.eth.getAccounts();
+    try {
+        await contract.methods.dislikePost(author, index).send({ from: accounts[0] });
+        alert("Post disliked successfully!");
+        getPosts(); // Refresh posts to update likes count
+    } catch (error) {
+        alert("Error disliking post: " + error.message);
+    }
+}
+
+
+        // Like a post
+        async function likePost(author, index) {
+            const accounts = await web3.eth.getAccounts();
+            try {
+                await contract.methods.likePost(author, index).send({ from: accounts[0] });
+                alert("Post liked successfully!");
+                getPosts(); 
+            } catch (error) {
+                alert("Error liking post: " + error.message);
+            }
+        }
+
+        // Initialize Web3 connection on page load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
