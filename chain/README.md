@@ -119,12 +119,6 @@ Open `index.html` in a browser. Ensure MetaMask is connected and the correct net
 
 ---
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
 ## Contributing
 
 Contributions are welcome! Please fork the repository, make changes, and submit a pull request. For significant changes, open an issue first to discuss your proposal.
