@@ -39,7 +39,7 @@ A decentralized social networking platform where users can publish posts, view p
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/mini-social-network-dapp.git
+[git clone https://github.com/your-username/mini-social-network-dapp.git](https://github.com/mohammed-stalin/blockchain.git)
 cd mini-social-network-dapp
 ```
 
