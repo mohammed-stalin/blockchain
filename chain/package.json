@@ -1,16 +1,23 @@
 {
-  "name": "chain",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.15"
-  }
+    "name":  "chain",
+    "version":  "1.0.0",
+    "description":  "MiniSocial decentralized social network on Sepolia",
+    "scripts":  {
+                    "compile":  "hardhat compile",
+                    "test:contracts":  "hardhat test",
+                    "test:web":  "npm run build && node --test test-web/*.test.js",
+                    "test":  "npm run test:contracts && npm run test:web",
+                    "prepare:app":  "hardhat compile && node scripts/prepare-app.js",
+                    "build":  "npm run prepare:app && node scripts/build-pages.js",
+                    "start":  "npm run prepare:app && node scripts/serve.js"
+                },
+    "keywords":  [
+
+                 ],
+    "author":  "",
+    "license":  "ISC",
+    "devDependencies":  {
+                            "@nomicfoundation/hardhat-toolbox":  "^5.0.0",
+                            "hardhat":  "^2.22.15"
+                        }
 }

@@ -1,0 +1,4 @@
+# Keep MiniSocial source and workflow files consistent across Windows and Linux.
+chain/** text=auto eol=lf
+chain/screenshots/** -text
+.github/workflows/** text=auto eol=lf
