@@ -5,7 +5,7 @@ const storageKey = "minisocial.contract." + config.chainId;
 let provider, signer, account, contract, artifact;
 let busy = false, feedAuthor = null, offset = 0, feedVersion = 0;
 const preferred = config.preferredWallet.toLowerCase();
-const actionIds = ["connect", "saveContract", "deploy", "publish", "refresh", "allPosts", "myPosts", "findAuthor", "loadMore"];
+const actionIds = ["connect", "switchAccount", "logout", "saveContract", "deploy", "publish", "refresh", "allPosts", "myPosts", "findAuthor", "loadMore"];
 
 function status(message, error = false) {
   $("status").textContent = message;
@@ -25,9 +25,12 @@ function syncControls() {
   ["publish", "refresh", "allPosts", "myPosts", "findAuthor", "loadMore"].forEach((id) => {
     $(id).disabled = busy || !contract || !account;
   });
+  $("connect").hidden = Boolean(account);
+  $("switchAccount").hidden = !account;
+  $("logout").hidden = !account;
   $("deploy").disabled = busy || !account || account.toLowerCase() !== preferred;
-  $("postContent").disabled = busy || !contract;
-  document.querySelectorAll(".post-actions button").forEach((button) => { button.disabled = busy || !contract; });
+  $("postContent").disabled = busy || !contract || !account;
+  document.querySelectorAll(".post-actions button").forEach((button) => { button.disabled = busy || !contract || !account; });
 }
 async function task(fn) {
   if (busy) return;
@@ -68,7 +71,14 @@ async function attach(address) {
 async function connect() {
   if (!window.ethereum) throw new Error("Install MetaMask, then open this page in that browser.");
   if (!window.ethers) throw new Error("Wallet library unavailable. Restart with npm start.");
-  contract = undefined; account = undefined;
+  resetSession();
+  status("Choose the account to connect in MetaMask.");
+  try {
+    await window.ethereum.request({ method: "wallet_requestPermissions", params: [{ eth_accounts: {} }] });
+  } catch (error) {
+    if (error.code !== -32601 && error.code !== 4200) throw error;
+    // Wallets without the permissions API can select accounts in their extension.
+  }
   await window.ethereum.request({ method: "eth_requestAccounts" });
   if (Number(await window.ethereum.request({ method: "eth_chainId" })) !== config.chainId) {
     await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0xaa36a7" }] });
@@ -77,7 +87,7 @@ async function connect() {
   signer = await provider.getSigner();
   account = await signer.getAddress();
   $("connect").textContent = account.slice(0, 6) + "…" + account.slice(-4);
-  $("walletStatus").textContent = account.toLowerCase() === preferred ? "Your preferred wallet is connected." : "Another wallet is connected. Select your preferred wallet to deploy.";
+  $("walletStatus").textContent = account.toLowerCase() === preferred ? "Your preferred wallet is connected." : "Wallet connected. You can publish posts and like the conversation.";
   $("balance").textContent = Number(ethers.formatEther(await provider.getBalance(account))).toFixed(5) + " Sepolia ETH";
   const response = await fetch("./deployment-artifact.json");
   if (!response.ok) throw new Error("Run npm run prepare:app to generate the contract artifact.");
@@ -170,18 +180,31 @@ async function transact(send, message) {
   await loadPosts(true);
   status(message);
 }
-function invalidate() {
+function resetSession() {
   contract = undefined; account = undefined; signer = undefined; provider = undefined;
-  feedVersion++;
-  $("connect").textContent = "Reconnect wallet";
-  $("walletStatus").textContent = "Wallet or network changed. Reconnect to continue.";
+  feedVersion++; feedAuthor = null; offset = 0;
+  $("postContent").value = ""; $("counter").textContent = "0 / 280 bytes";
+  $("authorAddress").value = "";
+  $("feedLabel").textContent = "Everyone \u00b7 newest first";
+  $("connect").textContent = "Connect wallet";
+  $("walletStatus").textContent = "Connect MetaMask to get started.";
   $("balance").textContent = ""; $("contractLink").hidden = true;
   $("posts").replaceChildren(); $("loadMore").hidden = true;
-  status("Wallet or network changed. Reconnect on Sepolia."); syncControls();
+  syncControls();
+}
+function logout() {
+  resetSession();
+  status("Logged out of MiniSocial. Click Connect wallet and select your second account in MetaMask.");
+}
+function invalidate() {
+  resetSession();
+  status("Wallet or network changed. Reconnect on Sepolia.");
 }
 $("preferredWallet").textContent = config.preferredWallet;
 $("contractAddress").value = storedAddress() || config.contractAddress;
 $("connect").addEventListener("click", () => task(connect));
+$("switchAccount").addEventListener("click", () => task(connect));
+$("logout").addEventListener("click", () => task(logout));
 $("saveContract").addEventListener("click", () => task(async () => {
   if (!account) throw new Error("Connect your wallet first.");
   await attach($("contractAddress").value.trim()); status("MiniSocial contract connected.");
